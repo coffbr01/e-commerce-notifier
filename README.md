@@ -1,4 +1,4 @@
-#E-Commerce Notifier
+# E-Commerce Notifier
 
 This script scrapes e-commerce websites like Micro Center for a configurable set of products,
  then sends a text message when stock is found.

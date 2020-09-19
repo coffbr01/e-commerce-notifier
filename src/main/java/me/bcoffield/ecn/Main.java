@@ -14,15 +14,22 @@ import static me.bcoffield.ecn.Constants.BEST_BUY_3080;
 import static me.bcoffield.ecn.Constants.MICRO_CENTER_3080;
 
 public class Main {
+  // The Twilio number to send the text message from
   private static final String FROM_PHONE_NUMBER = "+15555555555";
+
+  // The end users' phone numbers to send the text message to
   private static final List<String> TO_PHONE_NUMBERS = Arrays.asList("+15555555555");
-  private static final String ACCOUNT_SID = "<ENTER_ACCOUNT_SID>";
-  private static final String AUTH_TOKEN = "<ENTER_ACCOUNT_TOKEN>";
+
+  // Twilio API keys
+  private static final String TWILIO_ACCOUNT_SID = "<ENTER_ACCOUNT_SID>";
+  private static final String TWILIO_AUTH_TOKEN = "<ENTER_AUTH_TOKEN>";
+
+  // Absolute path to the gecko driver
   private static final String GECKO_DRIVER = "<ENTER_PATH_TO_GECKO_DRIVER>";
 
   public static void main(String[] args) {
     System.setProperty("webdriver.gecko.driver", GECKO_DRIVER);
-    Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
     new Main().start();
   }
 
