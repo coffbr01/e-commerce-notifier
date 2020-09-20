@@ -52,3 +52,5 @@ Currently implemented retailers are:
   * Nvidia
 
 Good luck, and happy purchasing!
+
+Worst case........millions.
