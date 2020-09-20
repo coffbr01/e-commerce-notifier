@@ -18,6 +18,9 @@ TWILIO_AUTH_TOKEN=<ENTER_AUTH_TOKEN>
 
 # The phone number(s) you want to send the text messages to, comma delimited
 TO_PHONE_NUMBERS=+15555555555,+15555555555
+
+# (Optional) Amount of time to wait (in milliseconds) between each round of website scrapes
+DELAY_BETWEEN_RUNS_MS=600000
 ```
 4. Run [Main.java](src/main/java/me/bcoffield/ecn/Main.java) using [java 14](https://jdk.java.net/)
 
