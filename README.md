@@ -22,8 +22,9 @@ toPhoneNumbers:
   - +15555555555
   - +15555555555
 
-# (Optional) Amount of time to wait (in milliseconds) between each round of website scrapes. Default 600000
-msDelayBetweenRuns: 600000
+# (Optional) Range of time to wait (in milliseconds) between each round of website scrapes. Default 60000-900000
+minDelay: 60000
+maxDelay: 900000
 
 # (Optional) Notifier type, e.g. TWILIO, PRINTLN. Default TWILIO
 notifierType: TWILIO
