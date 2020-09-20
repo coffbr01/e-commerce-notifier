@@ -3,6 +3,7 @@ package me.bcoffield.ecn.retailer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+@Retailer
 public class Nvidia extends AbstractRetailer {
   @Override
   protected String getProductListUrl() {
@@ -11,19 +12,18 @@ public class Nvidia extends AbstractRetailer {
 
   @Override
   protected By getListSelector() {
-    return By.className("product-container");
+    return By.id("mainCont");
   }
 
   @Override
   protected By getListItemSelector() {
-    return By.className("item-cell");
+    return By.className("product-container");
   }
 
   @Override
   protected String getItemUrl(WebElement itemElement) {
-    // Special case for Nvidia because their shop doesn't have a landing page for the 3080, you can
-    // only add to cart from the list page (I think)
-    return getProductListUrl();
+    // Special case for Nvidia because their list page doesn't have a link to each product, so hard code FE
+    return "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3080/";
   }
 
   @Override

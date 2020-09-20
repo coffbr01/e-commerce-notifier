@@ -43,13 +43,19 @@ public abstract class AbstractRetailer implements IRetailer {
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {
-      driver.get(getProductListUrl());
+      String productListUrl = getProductListUrl();
+      System.out.println("Looking for products at: " + productListUrl);
+      driver.get(productListUrl);
       wait.until(ExpectedConditions.presenceOfElementLocated(getListSelector()));
       Thread.sleep(3000);
-      return driver.findElements(getListItemSelector()).stream()
-          .filter(this::isItemInStock)
-          .map(this::getItemUrl)
-          .collect(Collectors.toList());
+      List<WebElement> listItems = driver.findElements(getListItemSelector());
+      List<String> inStockUrls =
+          listItems.stream()
+              .filter(this::isItemInStock)
+              .map(this::getItemUrl)
+              .collect(Collectors.toList());
+      System.out.println("Out of stock count: " + (listItems.size() - inStockUrls.size()));
+      return inStockUrls;
     } catch (InterruptedException e) {
       e.printStackTrace();
     } finally {

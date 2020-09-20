@@ -3,6 +3,7 @@ package me.bcoffield.ecn.retailer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+@Retailer
 public class BestBuy extends AbstractRetailer {
 
   @Override
