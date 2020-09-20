@@ -1,42 +1,42 @@
 package me.bcoffield.ecn;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import me.bcoffield.ecn.config.StartupConfig;
 import me.bcoffield.ecn.notifier.INotifier;
 import me.bcoffield.ecn.notifier.NotifierType;
 import me.bcoffield.ecn.notifier.PrintlnNotifier;
 import me.bcoffield.ecn.notifier.TwilioNotifier;
 import me.bcoffield.ecn.retailer.IRetailer;
 import me.bcoffield.ecn.retailer.Retailer;
+import org.apache.commons.cli.*;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class Main {
 
-  // Amount of time to wait (in milliseconds) between each round of website scrapes
-  private static long DELAY_BETWEEN_RUNS_MS;
+  private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-  private static NotifierType NOTIFIER_TYPE;
-
-  public static void main(String[] args) throws IOException {
-    initConfig();
+  public static void main(String[] args) throws IOException, ParseException {
+    initConfig(args);
     new Main().start();
   }
 
-  private static void initConfig() throws IOException {
-    Properties properties = new Properties();
-    properties.load(Main.class.getClassLoader().getResourceAsStream("secret.properties"));
-
-    DELAY_BETWEEN_RUNS_MS =
-        Long.parseLong(properties.getProperty("DELAY_BETWEEN_RUNS_MS", "600000"));
-    NOTIFIER_TYPE = NotifierType.valueOf(properties.getProperty("NOTIFIER_TYPE", "TWILIO"));
-
-    System.setProperty("webdriver.gecko.driver", properties.getProperty("GECKO_DRIVER"));
+  private static void initConfig(String[] args) throws IOException, ParseException {
+    Options options = new Options();
+    options.addOption("config", true, "Location of yaml config file");
+    CommandLineParser parser = new DefaultParser();
+    CommandLine cmd = parser.parse(options, args);
+    StartupConfig.set(
+        mapper.readValue(new File(cmd.getOptionValue("config")), StartupConfig.class));
+    System.setProperty("webdriver.gecko.driver", StartupConfig.get().getGeckoDriver());
   }
 
   private void start() {
@@ -51,7 +51,7 @@ public class Main {
                   .findInStockUrls()
                   .forEach(url -> notifier.notify("Available: ".concat(url))));
       try {
-        Thread.sleep(DELAY_BETWEEN_RUNS_MS);
+        Thread.sleep(StartupConfig.get().getMsDelayBetweenRuns());
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
@@ -59,7 +59,7 @@ public class Main {
   }
 
   private INotifier getNotifier() {
-    if (NOTIFIER_TYPE == NotifierType.PRINTLN) {
+    if (StartupConfig.get().getNotifierType() == NotifierType.PRINTLN) {
       return new PrintlnNotifier();
     }
     return new TwilioNotifier();
