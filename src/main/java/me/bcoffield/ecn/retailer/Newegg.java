@@ -11,12 +11,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class Newegg implements IRetailer {
+  private static final String RTX_3080 = "https://www.newegg.com/p/pl?N=100007709%20601357247";
+
   @Override
-  public List<String> findInStockUrls(String productListPageUrl) {
+  public List<String> findInStockUrls() {
     WebDriver driver = new FirefoxDriver();
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {
-      driver.get(productListPageUrl);
+      driver.get(RTX_3080);
       wait.until(ExpectedConditions.presenceOfElementLocated(By.className("items-grid-view")));
       Thread.sleep(3000);
       final List<String> result = new ArrayList<>();

@@ -11,12 +11,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class Nvidia implements IRetailer {
+  private static final String RTX_3080 =
+      "https://www.nvidia.com/en-us/shop/geforce/gpu/?page=1&limit=9&locale=en-us&category=GPU&gpu=RTX%203080&manufacturer=NVIDIA&manufacturer_filter=NVIDIA~1,ASUS~1,EVGA~2,GIGABYTE~2,MSI~1,PNY~0,ZOTAC~0";
+
   @Override
-  public List<String> findInStockUrls(String productListPageUrl) {
+  public List<String> findInStockUrls() {
     WebDriver driver = new FirefoxDriver();
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {
-      driver.get(productListPageUrl);
+      driver.get(RTX_3080);
       wait.until(ExpectedConditions.presenceOfElementLocated(By.className("product-container")));
       Thread.sleep(3000);
       final List<String> result = new ArrayList<>();

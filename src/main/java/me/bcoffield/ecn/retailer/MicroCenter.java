@@ -11,12 +11,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class MicroCenter implements IRetailer {
+
+  private static final String RTX_3080 =
+      "https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=3080&searchButton=search&storeId=045";
+
   @Override
-  public List<String> findInStockUrls(String productListPageUrl) {
+  public List<String> findInStockUrls() {
     WebDriver driver = new FirefoxDriver();
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {
-      driver.get(productListPageUrl);
+      driver.get(RTX_3080);
       wait.until(ExpectedConditions.presenceOfElementLocated(By.id("productGrid")));
       Thread.sleep(3000);
       final List<String> result = new ArrayList<>();
