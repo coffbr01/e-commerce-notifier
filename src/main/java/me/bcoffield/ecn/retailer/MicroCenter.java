@@ -3,13 +3,7 @@ package me.bcoffield.ecn.retailer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-@Retailer
 public class MicroCenter extends AbstractRetailer {
-
-  @Override
-  protected String getProductListUrl() {
-    return "https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=3080&searchButton=search&storeId=045";
-  }
 
   @Override
   protected By getListSelector() {

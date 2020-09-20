@@ -17,6 +17,8 @@ public class StartupConfig {
   private List<String> toPhoneNumbers;
   private Long msDelayBetweenRuns = 600000L;
   private NotifierType notifierType = NotifierType.TWILIO;
+  private List<RetailerUrl> productListUrls;
+  private List<RetailerUrl> productUrls;
 
   public static void set(StartupConfig startupConfig) {
     config = startupConfig;

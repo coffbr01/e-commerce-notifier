@@ -27,9 +27,28 @@ msDelayBetweenRuns: 600000
 
 # (Optional) Notifier type, e.g. TWILIO, PRINTLN. Default TWILIO
 notifierType: TWILIO
+
+# The product list pages to scrape. In this example, we're looking across 4 retailers for any RTX 3080 availability
+productListUrls:
+  - url: https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0507002&id=pcat17071&iht=n&ks=960&list=y&qp=gpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203080&sc=Global&st=categoryid%24abcat0507002&type=page&usc=All%20Categories
+  - url: https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=3080&searchButton=search&storeId=045
+  - url: https://www.newegg.com/p/pl?N=100007709%20601357247
+  - url: https://www.nvidia.com/en-us/shop/geforce/gpu/?page=1&limit=9&locale=en-us&category=GPU&gpu=RTX%203080&manufacturer=NVIDIA&manufacturer_filter=NVIDIA~1,ASUS~1,EVGA~2,GIGABYTE~2,MSI~1,PNY~0,ZOTAC~0
+
+# The single product pages to scrape. Useful if a retailer's list page is terrible.
+# TODO NOT YET IMPLEMENTED
+productUrls:
+  - url: https://www.someretailer.com/shop/product1
+  - url: https://www.someretailer.com/shop/product2
 ```
 4. Run `mvn clean install` to build the project (install [maven](https://maven.apache.org/install.html)
  if you don't already have it)
 5. Run `java -jar target/e-commerce-notifier-1.0-SNAPSHOT-jar-with-dependencies.jar -config <yaml_from_step_3>`
 
-Good luck!
+Currently implemented retailers are:
+  * Best Buy
+  * Micro Center
+  * Newegg
+  * Nvidia
+
+Good luck, and happy purchasing!

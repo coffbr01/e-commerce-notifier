@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractRetailer implements IRetailer {
-  /** The website's list page to be scraped */
-  protected abstract String getProductListUrl();
-
   /** Selenium By that tells this class how to find the product list */
   protected abstract By getListSelector();
 
@@ -37,15 +34,14 @@ public abstract class AbstractRetailer implements IRetailer {
   abstract boolean isItemInStock(WebElement itemElement);
 
   @Override
-  public List<String> findInStockUrls() {
+  public List<String> findInStockUrls(String url) {
     FirefoxOptions firefoxOptions = new FirefoxOptions();
     firefoxOptions.setHeadless(true);
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {
-      String productListUrl = getProductListUrl();
-      System.out.println("Looking for products at: " + productListUrl);
-      driver.get(productListUrl);
+      System.out.println("Looking for products at: " + url);
+      driver.get(url);
       wait.until(ExpectedConditions.presenceOfElementLocated(getListSelector()));
       Thread.sleep(3000);
       List<WebElement> listItems = driver.findElements(getListItemSelector());

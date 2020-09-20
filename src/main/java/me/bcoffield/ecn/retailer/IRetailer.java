@@ -8,5 +8,5 @@ public interface IRetailer {
    *
    * @return The product URLs that are in stock
    */
-  List<String> findInStockUrls();
+  List<String> findInStockUrls(String url);
 }
