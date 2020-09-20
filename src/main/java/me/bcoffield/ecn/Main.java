@@ -6,29 +6,28 @@ import com.twilio.type.PhoneNumber;
 import me.bcoffield.ecn.retailer.BestBuy;
 import me.bcoffield.ecn.retailer.MicroCenter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import static me.bcoffield.ecn.Constants.BEST_BUY_3080;
 import static me.bcoffield.ecn.Constants.MICRO_CENTER_3080;
 
 public class Main {
   // The Twilio number to send the text message from
-  private static final String FROM_PHONE_NUMBER = "+15555555555";
+  private static String FROM_PHONE_NUMBER;
 
   // The end users' phone numbers to send the text message to
-  private static final List<String> TO_PHONE_NUMBERS = Arrays.asList("+15555555555");
+  private static List<String> TO_PHONE_NUMBERS;
 
   // Twilio API keys
-  private static final String TWILIO_ACCOUNT_SID = "<ENTER_ACCOUNT_SID>";
-  private static final String TWILIO_AUTH_TOKEN = "<ENTER_AUTH_TOKEN>";
+  private static String TWILIO_ACCOUNT_SID;
+  private static String TWILIO_AUTH_TOKEN;
 
-  // Absolute path to the gecko driver
-  private static final String GECKO_DRIVER = "<ENTER_PATH_TO_GECKO_DRIVER>";
-
-  public static void main(String[] args) {
-    System.setProperty("webdriver.gecko.driver", GECKO_DRIVER);
+  public static void main(String[] args) throws IOException {
+    initConfig();
     Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
     new Main().start();
   }
@@ -53,5 +52,15 @@ public class Main {
         e.printStackTrace();
       }
     }
+  }
+
+  private static void initConfig() throws IOException {
+    Properties properties = new Properties();
+    properties.load(Main.class.getClassLoader().getResourceAsStream("secret.properties"));
+    FROM_PHONE_NUMBER = properties.getProperty("FROM_PHONE_NUMBER");
+    TO_PHONE_NUMBERS = Arrays.asList((properties.getProperty("TO_PHONE_NUMBERS")).split(","));
+    TWILIO_ACCOUNT_SID = properties.getProperty("TWILIO_ACCOUNT_SID");
+    TWILIO_AUTH_TOKEN = properties.getProperty("TWILIO_AUTH_TOKEN");
+    System.setProperty("webdriver.gecko.driver", properties.getProperty("GECKO_DRIVER"));
   }
 }
