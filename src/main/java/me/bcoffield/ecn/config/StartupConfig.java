@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.bcoffield.ecn.notifier.NotifierType;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -15,10 +16,11 @@ public class StartupConfig {
   private String twilioAccountSid;
   private String twilioAuthToken;
   private List<String> toPhoneNumbers;
-  private Long msDelayBetweenRuns = 600000L;
+  private Long minDelay = 60000L;
+  private Long maxDelay = 900000L;
   private NotifierType notifierType = NotifierType.TWILIO;
-  private List<RetailerUrl> productListUrls;
-  private List<RetailerUrl> productUrls;
+  private List<RetailerUrl> productListUrls = Collections.emptyList();
+  private List<RetailerUrl> productUrls = Collections.emptyList();
 
   public static void set(StartupConfig startupConfig) {
     config = startupConfig;
