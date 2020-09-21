@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -41,6 +42,7 @@ public abstract class AbstractRetailer implements IRetailer {
   public List<String> findInStockUrls(String url) {
     FirefoxOptions firefoxOptions = new FirefoxOptions();
     firefoxOptions.setHeadless(true);
+    firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     WebDriverWait wait = new WebDriverWait(driver, 10);
     try {

@@ -16,14 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executor;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Main {
 
   private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-  private static final Executor executor = Executors.newFixedThreadPool(10);
   private INotifier notifier;
 
   public static void main(String[] args) throws IOException, ParseException {
@@ -46,10 +47,33 @@ public class Main {
 
     while (true) {
       List<RetailerUrl> productListUrls = StartupConfig.get().getProductListUrls();
-      productListUrls.forEach(url -> scrapeUrlAsync(url.getUrl()));
+      ExecutorService executor = Executors.newFixedThreadPool(productListUrls.size());
+
+      List<Runnable> tasks =
+          productListUrls.stream()
+              .map(url -> createRetailerRunnable(url.getUrl()))
+              .collect(Collectors.toList());
+
+      CompletableFuture<?>[] futures =
+          tasks.stream()
+              .map(task -> CompletableFuture.runAsync(task, executor))
+              .toArray(CompletableFuture[]::new);
+      CompletableFuture.allOf(futures).join();
+      executor.shutdown();
+
       // TODO implement StartupConfig.get().getProductUrls()
       delay();
     }
+  }
+
+  private Runnable createRetailerRunnable(String url) {
+    return () ->
+        RetailerFactory.getRetailer(url)
+            .findInStockUrls(url)
+            .forEach(
+                inStockUrl -> {
+                  notifier.notify("Available: ".concat(inStockUrl));
+                });
   }
 
   private void delay() {
@@ -77,14 +101,6 @@ public class Main {
     long hour = (durationInMillis / (1000 * 60 * 60)) % 24;
 
     return String.format("%02d:%02d:%02d", hour, minute, second);
-  }
-
-  private void scrapeUrlAsync(String productListUrl) {
-    executor.execute(
-        () ->
-            RetailerFactory.getRetailer(productListUrl)
-                .findInStockUrls(productListUrl)
-                .forEach(url -> notifier.notify("Available: ".concat(url))));
   }
 
   private INotifier getNotifier() {
