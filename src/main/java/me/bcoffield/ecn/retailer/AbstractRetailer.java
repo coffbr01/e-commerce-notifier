@@ -10,7 +10,6 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -40,27 +39,32 @@ public abstract class AbstractRetailer implements IRetailer {
 
   @Override
   public List<String> findInStockUrls(String url) {
-    FirefoxOptions firefoxOptions = new FirefoxOptions();
-    firefoxOptions.setHeadless(true);
-    firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
-    WebDriver driver = new FirefoxDriver(firefoxOptions);
-    WebDriverWait wait = new WebDriverWait(driver, 10);
+    WebDriver driver = null;
     try {
+      FirefoxOptions firefoxOptions = new FirefoxOptions();
+      firefoxOptions.setHeadless(true);
+      firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
+      driver = new FirefoxDriver(firefoxOptions);
+      WebDriverWait wait = new WebDriverWait(driver, 10);
       driver.get(url);
       wait.until(ExpectedConditions.presenceOfElementLocated(getListSelector()));
-      Thread.sleep(3000);
       List<WebElement> listItems = driver.findElements(getListItemSelector());
       List<String> inStockUrls =
           listItems.stream()
               .filter(this::isItemInStock)
               .map(this::getItemUrl)
               .collect(Collectors.toList());
-      log.info("Out of stock count for {}: {}", new URL(url).getHost(), listItems.size() - inStockUrls.size());
+      log.info(
+          "Out of stock count for {}: {}",
+          new URL(url).getHost(),
+          listItems.size() - inStockUrls.size());
       return inStockUrls;
-    } catch (InterruptedException | MalformedURLException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      driver.close();
+      if (driver != null) {
+        driver.close();
+      }
     }
     return Collections.emptyList();
   }
