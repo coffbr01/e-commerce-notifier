@@ -1,6 +1,7 @@
 package me.bcoffield.ecn.retailer;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class Newegg extends AbstractRetailer {
@@ -27,5 +28,10 @@ public class Newegg extends AbstractRetailer {
         .findElement(By.tagName("button"))
         .getText()
         .equalsIgnoreCase("ADD TO CART");
+  }
+
+  @Override
+  protected boolean canPurchaseProduct(WebDriver driver) {
+    return false;
   }
 }

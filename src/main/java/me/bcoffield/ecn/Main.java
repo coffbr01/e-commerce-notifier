@@ -47,12 +47,19 @@ public class Main {
 
     while (true) {
       List<RetailerUrl> productListUrls = StartupConfig.get().getProductListUrls();
-      ExecutorService executor = Executors.newFixedThreadPool(productListUrls.size());
+      List<RetailerUrl> productUrls = StartupConfig.get().getProductUrls();
 
       List<Runnable> tasks =
-          productListUrls.stream()
-              .map(url -> createRetailerRunnable(url.getUrl()))
+          productUrls.stream()
+              .map(url -> createRetailerProductRunnable(url.getUrl()))
               .collect(Collectors.toList());
+
+      tasks.addAll(
+          productListUrls.stream()
+              .map(url -> createRetailerListRunnable(url.getUrl()))
+              .collect(Collectors.toList()));
+
+      ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
 
       CompletableFuture<?>[] futures =
           tasks.stream()
@@ -66,7 +73,16 @@ public class Main {
     }
   }
 
-  private Runnable createRetailerRunnable(String url) {
+  private Runnable createRetailerProductRunnable(String url) {
+    return () -> {
+      boolean inStock = RetailerFactory.getRetailer(url).isProductInStock(url);
+      if (inStock) {
+        notifier.notify("Available: ".concat(url));
+      }
+    };
+  }
+
+  private Runnable createRetailerListRunnable(String url) {
     return () ->
         RetailerFactory.getRetailer(url)
             .findInStockUrls(url)

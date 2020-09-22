@@ -1,6 +1,7 @@
 package me.bcoffield.ecn.retailer;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class BestBuy extends AbstractRetailer {
@@ -29,5 +30,10 @@ public class BestBuy extends AbstractRetailer {
         .findElement(By.className("add-to-cart-button"))
         .getText()
         .equalsIgnoreCase("Add to Cart");
+  }
+
+  @Override
+  protected boolean canPurchaseProduct(WebDriver driver) {
+    return false;
   }
 }

@@ -37,6 +37,8 @@ public abstract class AbstractRetailer implements IRetailer {
    */
   abstract boolean isItemInStock(WebElement itemElement);
 
+  protected abstract boolean canPurchaseProduct(WebDriver driver);
+
   @Override
   public List<String> findInStockUrls(String url) {
     WebDriver driver = null;
@@ -63,9 +65,39 @@ public abstract class AbstractRetailer implements IRetailer {
       e.printStackTrace();
     } finally {
       if (driver != null) {
-        driver.close();
+        try {
+          driver.close();
+        } catch (Exception e) {
+          log.error("Couldn't close the web driver", e);
+        }
       }
     }
     return Collections.emptyList();
+  }
+
+  @Override
+  public boolean isProductInStock(String url) {
+    WebDriver driver = null;
+    try {
+      FirefoxOptions firefoxOptions = new FirefoxOptions();
+      firefoxOptions.setHeadless(true);
+      firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
+      driver = new FirefoxDriver(firefoxOptions);
+      driver.get(url);
+      boolean inStock = canPurchaseProduct(driver);
+      log.info("in stock: {} for {}", inStock, url);
+      return inStock;
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if (driver != null) {
+        try {
+          driver.close();
+        } catch (Exception e) {
+          log.error("Couldn't close the web driver", e);
+        }
+      }
+    }
+    return false;
   }
 }
