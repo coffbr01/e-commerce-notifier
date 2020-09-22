@@ -16,7 +16,7 @@ public class Nvidia extends AbstractRetailer {
 
   @Override
   protected By getListItemSelector() {
-    return By.className("product-container");
+    return By.tagName("product-details");
   }
 
   @Override
