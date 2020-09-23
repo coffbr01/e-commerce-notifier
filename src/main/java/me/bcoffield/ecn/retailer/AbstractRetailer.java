@@ -115,7 +115,7 @@ public abstract class AbstractRetailer implements IRetailer {
 
   private WebDriver openWebDriver(String url) {
     FirefoxOptions firefoxOptions = new FirefoxOptions();
-    //      firefoxOptions.setHeadless(true);
+    firefoxOptions.setHeadless(true);
     firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     driver.get(url);

@@ -12,7 +12,7 @@ import java.util.Map;
 @Slf4j
 public class TwilioNotifier implements INotifier {
 
-  private static final long INTERVAL = 300000;
+  private static final long INTERVAL = 86400000;
   private static final long AMOUNT = 1;
   private static final Map<String, NotificationSummary> sentNotifications = new HashMap<>();
   private static boolean initialized = false;
@@ -34,16 +34,13 @@ public class TwilioNotifier implements INotifier {
           .getToPhoneNumbers()
           .forEach(to -> Message.creator(new PhoneNumber(to), from, note).create());
       NotificationSummary notificationSummary = sentNotifications.get(note);
-      if (notificationSummary == null) {
-        notificationSummary = new NotificationSummary(note);
-        sentNotifications.put(note, notificationSummary);
-      }
       notificationSummary.setCount(notificationSummary.getCount() + 1);
     }
   }
 
   private boolean isAllowedToNotify(String note) {
     if (!sentNotifications.containsKey(note)) {
+      sentNotifications.put(note, new NotificationSummary(note));
       return true;
     }
     NotificationSummary notificationSummary = sentNotifications.get(note);
