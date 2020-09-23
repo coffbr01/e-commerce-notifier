@@ -23,11 +23,10 @@ public class Newegg extends AbstractRetailer {
 
   @Override
   protected boolean isItemInStock(WebElement itemElement) {
-    return itemElement
-        .findElement(By.className("item-button-area"))
-        .findElement(By.tagName("button"))
+    return !itemElement
+        .findElement(By.className("item-promo"))
         .getText()
-        .equalsIgnoreCase("ADD TO CART");
+        .equalsIgnoreCase("OUT OF STOCK");
   }
 
   @Override
