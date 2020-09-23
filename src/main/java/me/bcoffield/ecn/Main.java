@@ -15,7 +15,6 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,16 +67,14 @@ public class Main {
       CompletableFuture.allOf(futures).join();
       executor.shutdown();
 
-      // TODO implement StartupConfig.get().getProductUrls()
       delay();
     }
   }
 
   private Runnable createRetailerProductRunnable(String url) {
     return () -> {
-      boolean inStock = RetailerFactory.getRetailer(url).isProductInStock(url);
-      if (inStock) {
-        notifier.notify("Available: ".concat(url));
+      if (RetailerFactory.getRetailer(url).isProductInStock(url)) {
+        notifier.notify(url);
       }
     };
   }
@@ -86,22 +83,13 @@ public class Main {
     return () ->
         RetailerFactory.getRetailer(url)
             .findInStockUrls(url)
-            .forEach(
-                inStockUrl -> {
-                  notifier.notify("Available: ".concat(inStockUrl));
-                });
+            .forEach(inStockUrl -> notifier.notify(inStockUrl));
   }
 
   private void delay() {
-    Random random = new Random();
-    double randomDouble = random.nextDouble();
-    if (random.nextBoolean()) {
-      randomDouble = randomDouble * -1;
-    }
-    long avgDelay = (StartupConfig.get().getMinDelay() + StartupConfig.get().getMaxDelay()) / 2;
-    long distanceToBoundary = StartupConfig.get().getMaxDelay() - avgDelay;
-    double adjustment = distanceToBoundary * randomDouble;
-    long sleepFor = (long) (avgDelay + adjustment);
+    long leftLimit = StartupConfig.get().getMinDelay();
+    long rightLimit = StartupConfig.get().getMaxDelay();
+    long sleepFor = leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
     try {
       log.info("Sleeping for {}", toHumanReadableTime(sleepFor));
       Thread.sleep(sleepFor);
@@ -114,9 +102,8 @@ public class Main {
   private String toHumanReadableTime(long durationInMillis) {
     long second = (durationInMillis / 1000) % 60;
     long minute = (durationInMillis / (1000 * 60)) % 60;
-    long hour = (durationInMillis / (1000 * 60 * 60)) % 24;
 
-    return String.format("%02d:%02d:%02d", hour, minute, second);
+    return String.format("%02d:%02d", minute, second);
   }
 
   private INotifier getNotifier() {

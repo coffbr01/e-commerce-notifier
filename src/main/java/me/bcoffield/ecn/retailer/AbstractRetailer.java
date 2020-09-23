@@ -1,16 +1,19 @@
 package me.bcoffield.ecn.retailer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,14 +44,11 @@ public abstract class AbstractRetailer implements IRetailer {
 
   @Override
   public List<String> findInStockUrls(String url) {
+    log.info("Inspecting list page {}", url);
     WebDriver driver = null;
     try {
-      FirefoxOptions firefoxOptions = new FirefoxOptions();
-      firefoxOptions.setHeadless(true);
-      firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
-      driver = new FirefoxDriver(firefoxOptions);
-      WebDriverWait wait = new WebDriverWait(driver, 10);
-      driver.get(url);
+      driver = openWebDriver(url);
+      WebDriverWait wait = new WebDriverWait(driver, 5);
       wait.until(ExpectedConditions.presenceOfElementLocated(getListSelector()));
       List<WebElement> listItems = driver.findElements(getListItemSelector());
       List<String> inStockUrls =
@@ -62,15 +62,10 @@ public abstract class AbstractRetailer implements IRetailer {
           listItems.size() - inStockUrls.size());
       return inStockUrls;
     } catch (Exception e) {
+      takeScreenshot(driver);
       e.printStackTrace();
     } finally {
-      if (driver != null) {
-        try {
-          driver.close();
-        } catch (Exception e) {
-          log.error("Couldn't close the web driver", e);
-        }
-      }
+      closeDriver(driver);
     }
     return Collections.emptyList();
   }
@@ -79,25 +74,61 @@ public abstract class AbstractRetailer implements IRetailer {
   public boolean isProductInStock(String url) {
     WebDriver driver = null;
     try {
-      FirefoxOptions firefoxOptions = new FirefoxOptions();
-      firefoxOptions.setHeadless(true);
-      firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
-      driver = new FirefoxDriver(firefoxOptions);
-      driver.get(url);
+      driver = openWebDriver(url);
       boolean inStock = canPurchaseProduct(driver);
       log.info("in stock: {} for {}", inStock, url);
       return inStock;
     } catch (Exception e) {
+      takeScreenshot(driver);
       e.printStackTrace();
     } finally {
-      if (driver != null) {
-        try {
-          driver.close();
-        } catch (Exception e) {
-          log.error("Couldn't close the web driver", e);
-        }
-      }
+      closeDriver(driver);
     }
     return false;
+  }
+
+  protected void takeScreenshot(WebDriver driver) {
+    try {
+      TakesScreenshot ts = (TakesScreenshot) driver;
+      File source = ts.getScreenshotAs(OutputType.FILE);
+      Instant instant = Instant.ofEpochMilli(System.currentTimeMillis());
+      LocalDateTime date = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+      String fileName =
+          date.getYear()
+              + "-"
+              + date.getMonthValue()
+              + "-"
+              + date.getDayOfMonth()
+              + "_"
+              + date.getHour()
+              + "-"
+              + date.getMinute()
+              + "-"
+              + date.getSecond();
+      log.info(fileName);
+      FileUtils.copyFile(source, new File("./screenshots/" + fileName + ".png"));
+      log.info("Screenshot taken");
+    } catch (Exception e) {
+      log.error("Exception while taking screenshot", e);
+    }
+  }
+
+  private WebDriver openWebDriver(String url) {
+    FirefoxOptions firefoxOptions = new FirefoxOptions();
+    //      firefoxOptions.setHeadless(true);
+    firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
+    WebDriver driver = new FirefoxDriver(firefoxOptions);
+    driver.get(url);
+    return driver;
+  }
+
+  private void closeDriver(WebDriver driver) {
+    if (driver != null) {
+      try {
+        driver.close();
+      } catch (Exception e) {
+        log.error("Couldn't close the web driver", e);
+      }
+    }
   }
 }
