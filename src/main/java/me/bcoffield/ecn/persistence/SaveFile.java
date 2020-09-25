@@ -11,4 +11,5 @@ import java.util.Map;
 @Setter
 public class SaveFile {
   private Map<String, NotificationSummary> notificationSummaries = new HashMap<>();
+  private Map<String, ErrorStatistic> errorStatistics = new HashMap<>();
 }

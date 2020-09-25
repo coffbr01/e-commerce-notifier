@@ -1,6 +1,8 @@
 package me.bcoffield.ecn.retailer;
 
 import lombok.extern.slf4j.Slf4j;
+import me.bcoffield.ecn.persistence.ErrorStatistic;
+import me.bcoffield.ecn.persistence.SaveFileMgmt;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -11,11 +13,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.net.URL;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,7 +63,8 @@ public abstract class AbstractRetailer implements IRetailer {
       return inStockUrls;
     } catch (Exception e) {
       takeScreenshot(driver);
-      e.printStackTrace();
+      logErrorStatistic(url);
+      log.warn("Failed to check products", e);
     } finally {
       closeDriver(driver);
     }
@@ -80,33 +81,27 @@ public abstract class AbstractRetailer implements IRetailer {
       return inStock;
     } catch (Exception e) {
       takeScreenshot(driver);
-      e.printStackTrace();
+      logErrorStatistic(url);
+      log.warn("Failed to check product", e);
     } finally {
       closeDriver(driver);
     }
     return false;
   }
 
+  private void logErrorStatistic(String url) {
+    Map<String, ErrorStatistic> errorStatistics = SaveFileMgmt.get().getErrorStatistics();
+    if (!errorStatistics.containsKey(url)) {
+      errorStatistics.put(url, new ErrorStatistic());
+    }
+    errorStatistics.get(url).getOccurrences().add(System.currentTimeMillis());
+  }
+
   protected void takeScreenshot(WebDriver driver) {
     try {
       TakesScreenshot ts = (TakesScreenshot) driver;
       File source = ts.getScreenshotAs(OutputType.FILE);
-      Instant instant = Instant.ofEpochMilli(System.currentTimeMillis());
-      LocalDateTime date = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-      String fileName =
-          date.getYear()
-              + "-"
-              + date.getMonthValue()
-              + "-"
-              + date.getDayOfMonth()
-              + "_"
-              + date.getHour()
-              + "-"
-              + date.getMinute()
-              + "-"
-              + date.getSecond();
-      log.info(fileName);
-      FileUtils.copyFile(source, new File("./screenshots/" + fileName + ".png"));
+      FileUtils.copyFile(source, new File("./screenshots/" + System.currentTimeMillis() + ".png"));
       log.info("Screenshot taken");
     } catch (Exception e) {
       log.error("Exception while taking screenshot", e);

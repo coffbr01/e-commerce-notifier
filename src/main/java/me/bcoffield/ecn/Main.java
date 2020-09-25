@@ -9,6 +9,7 @@ import me.bcoffield.ecn.notifier.INotifier;
 import me.bcoffield.ecn.notifier.NotifierType;
 import me.bcoffield.ecn.notifier.PrintlnNotifier;
 import me.bcoffield.ecn.notifier.TwilioNotifier;
+import me.bcoffield.ecn.persistence.ErrorStatistic;
 import me.bcoffield.ecn.persistence.SaveFileMgmt;
 import me.bcoffield.ecn.retailer.RetailerFactory;
 import org.apache.commons.cli.*;
@@ -16,6 +17,7 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,8 +48,9 @@ public class Main {
     notifier = getNotifier();
 
     while (true) {
-      List<RetailerUrl> productListUrls = StartupConfig.get().getProductListUrls();
-      List<RetailerUrl> productUrls = StartupConfig.get().getProductUrls();
+      List<RetailerUrl> productListUrls =
+          filterHighErrorRate(StartupConfig.get().getProductListUrls());
+      List<RetailerUrl> productUrls = filterHighErrorRate(StartupConfig.get().getProductUrls());
 
       List<Runnable> tasks =
           productUrls.stream()
@@ -71,6 +74,30 @@ public class Main {
       SaveFileMgmt.save();
       delay();
     }
+  }
+
+  private List<RetailerUrl> filterHighErrorRate(List<RetailerUrl> urls) {
+    final Map<String, ErrorStatistic> errorStatistics = SaveFileMgmt.get().getErrorStatistics();
+    return urls.stream()
+        .filter(
+            url -> {
+              if (!errorStatistics.containsKey(url.getUrl())) {
+                return true;
+              }
+              ErrorStatistic errorStatistic = errorStatistics.get(url.getUrl());
+              long startTime = System.currentTimeMillis() - (StartupConfig.get().getMaxDelay() * 4);
+              long occurrencesInWindow =
+                  errorStatistic.getOccurrences().stream()
+                      .filter(timestamp -> timestamp > startTime)
+                      .count();
+              boolean happyUrl = occurrencesInWindow <= 2;
+              if (!happyUrl) {
+                log.info(
+                    "Skipping due to {} recent errors {}", occurrencesInWindow, url.getUrl());
+              }
+              return happyUrl;
+            })
+        .collect(Collectors.toList());
   }
 
   private Runnable createRetailerProductRunnable(String url) {

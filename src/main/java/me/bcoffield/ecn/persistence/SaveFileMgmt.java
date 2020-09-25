@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 /** This is a terrible hack and I apologize in advance. */
 @Slf4j
@@ -34,6 +35,17 @@ public class SaveFileMgmt {
       log.debug("Not saving null state");
       return;
     }
+    // Remove old error statistics
+    SAVE_FILE
+        .getErrorStatistics()
+        .values()
+        .forEach(
+            errorStatistic -> {
+              errorStatistic.setOccurrences(
+                  errorStatistic.getOccurrences().stream()
+                      .filter(timestamp -> timestamp > System.currentTimeMillis() - 3600000)
+                      .collect(Collectors.toList()));
+            });
     try {
       mapper.writeValue(FILE, SAVE_FILE);
     } catch (IOException e) {
