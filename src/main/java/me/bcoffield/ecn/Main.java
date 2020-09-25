@@ -9,6 +9,7 @@ import me.bcoffield.ecn.notifier.INotifier;
 import me.bcoffield.ecn.notifier.NotifierType;
 import me.bcoffield.ecn.notifier.PrintlnNotifier;
 import me.bcoffield.ecn.notifier.TwilioNotifier;
+import me.bcoffield.ecn.persistence.SaveFileMgmt;
 import me.bcoffield.ecn.retailer.RetailerFactory;
 import org.apache.commons.cli.*;
 
@@ -67,6 +68,7 @@ public class Main {
       CompletableFuture.allOf(futures).join();
       executor.shutdown();
 
+      SaveFileMgmt.save();
       delay();
     }
   }

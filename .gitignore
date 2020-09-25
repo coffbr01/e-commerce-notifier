@@ -4,3 +4,4 @@ target/
 config.yaml
 screenshots/
 logs/
+saveFile.json
