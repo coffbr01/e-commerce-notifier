@@ -72,6 +72,11 @@ public class Main {
       executor.shutdown();
 
       SaveFileMgmt.save();
+      try {
+        Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe");
+      } catch (IOException e) {
+        log.error("Could not kill geckodriver.exe's", e);
+      }
       delay();
     }
   }
@@ -122,7 +127,6 @@ public class Main {
     try {
       log.info("Sleeping for {}", toHumanReadableTime(sleepFor));
       Thread.sleep(sleepFor);
-      log.info("Slept for {}", toHumanReadableTime(sleepFor));
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
