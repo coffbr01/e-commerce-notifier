@@ -141,7 +141,7 @@ public class Main {
   }
 
   private INotifier getNotifier() {
-    if (StartupConfig.get().getNotifierType() == NotifierType.PRINTLN) {
+    if (StartupConfig.get().getNotifier().getType() == NotifierType.PRINTLN) {
       return new PrintlnNotifier();
     }
     return new TwilioNotifier();

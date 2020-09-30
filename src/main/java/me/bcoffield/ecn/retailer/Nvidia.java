@@ -29,7 +29,7 @@ public class Nvidia extends AbstractRetailer {
   @Override
   protected boolean isItemInStock(WebElement itemElement) {
     String text = itemElement.findElement(By.className("featured-buy-link")).getText();
-    return !text.equalsIgnoreCase("OUT OF STOCK");
+    return text.equalsIgnoreCase("ADD TO CART");
   }
 
   @Override

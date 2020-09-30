@@ -11,8 +11,6 @@ import me.bcoffield.ecn.persistence.SaveFileMgmt;
 @Slf4j
 public class TwilioNotifier implements INotifier {
 
-  private static final long INTERVAL = 86400000;
-  private static final long AMOUNT = 1;
   private static boolean initialized = false;
 
   public TwilioNotifier() {
@@ -26,6 +24,7 @@ public class TwilioNotifier implements INotifier {
   @Override
   public void notify(String note) {
     log.info(note);
+    // TODO this SaveFile impl should go into an abstract class
     SaveFile saveFile = SaveFileMgmt.get();
     if (isAllowedToNotify(note, saveFile)) {
       PhoneNumber from = new PhoneNumber(StartupConfig.get().getFromPhoneNumber());
@@ -44,9 +43,10 @@ public class TwilioNotifier implements INotifier {
       return true;
     }
     NotificationSummary notificationSummary = saveFile.getNotificationSummaries().get(note);
-    if (System.currentTimeMillis() - notificationSummary.getTimestamp() >= INTERVAL) {
+    if (System.currentTimeMillis() - notificationSummary.getTimestamp()
+        >= StartupConfig.get().getNotifier().getMinimumInterval()) {
       return true;
     }
-    return notificationSummary.getCount() < AMOUNT;
+    return notificationSummary.getCount() < 1;
   }
 }
