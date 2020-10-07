@@ -1,9 +1,11 @@
 package me.bcoffield.ecn.retailer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+@Slf4j
 public class Newegg extends AbstractRetailer {
 
   @Override
@@ -23,10 +25,9 @@ public class Newegg extends AbstractRetailer {
 
   @Override
   protected boolean isItemInStock(WebElement itemElement) {
-    return !itemElement
-        .findElement(By.className("item-promo"))
-        .getText()
-        .equalsIgnoreCase("OUT OF STOCK");
+    String text = itemElement.findElement(By.className("btn")).getText();
+
+    return text.equalsIgnoreCase("ADD TO CART");
   }
 
   @Override

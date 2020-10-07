@@ -56,13 +56,16 @@ public abstract class AbstractRetailer implements IRetailer {
               .filter(this::isItemInStock)
               .map(this::getItemUrl)
               .collect(Collectors.toList());
+      if (!inStockUrls.isEmpty()) {
+        takeScreenshot(driver, "success");
+      }
       log.info(
           "Out of stock count for {}: {}",
           new URL(url).getHost(),
           listItems.size() - inStockUrls.size());
       return inStockUrls;
     } catch (Exception e) {
-      takeScreenshot(driver);
+      takeScreenshot(driver, "failList");
       logErrorStatistic(url);
       log.warn("Failed to check products", e);
     } finally {
@@ -80,7 +83,7 @@ public abstract class AbstractRetailer implements IRetailer {
       log.info("in stock: {} for {}", inStock, url);
       return inStock;
     } catch (Exception e) {
-      takeScreenshot(driver);
+      takeScreenshot(driver, "failSingle");
       logErrorStatistic(url);
       log.warn("Failed to check product", e);
     } finally {
@@ -97,11 +100,11 @@ public abstract class AbstractRetailer implements IRetailer {
     errorStatistics.get(url).getOccurrences().add(System.currentTimeMillis());
   }
 
-  protected void takeScreenshot(WebDriver driver) {
+  protected void takeScreenshot(WebDriver driver, String dir) {
     try {
       TakesScreenshot ts = (TakesScreenshot) driver;
       File source = ts.getScreenshotAs(OutputType.FILE);
-      FileUtils.copyFile(source, new File("./screenshots/" + System.currentTimeMillis() + ".png"));
+      FileUtils.copyFile(source, new File("./screenshots/" + dir + "/" + System.currentTimeMillis() + ".png"));
       log.info("Screenshot taken");
     } catch (Exception e) {
       log.error("Exception while taking screenshot", e);
@@ -113,6 +116,8 @@ public abstract class AbstractRetailer implements IRetailer {
     firefoxOptions.setHeadless(true);
     firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
     WebDriver driver = new FirefoxDriver(firefoxOptions);
+    driver.manage().window().setPosition(new Point(0, 0));
+    driver.manage().window().setSize(new Dimension(3840, 2160));
     driver.get(url);
     return driver;
   }
