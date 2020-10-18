@@ -16,7 +16,7 @@ public class Nvidia extends AbstractRetailer {
 
   @Override
   protected By getListItemSelector() {
-    return By.tagName("product-details");
+    return By.tagName("featured-product");
   }
 
   @Override
@@ -28,7 +28,7 @@ public class Nvidia extends AbstractRetailer {
 
   @Override
   protected boolean isItemInStock(WebElement itemElement) {
-    String text = itemElement.findElement(By.className("featured-buy-link")).getText();
+    String text = itemElement.findElement(By.className("buy-link")).getText();
     return text.equalsIgnoreCase("ADD TO CART");
   }
 
