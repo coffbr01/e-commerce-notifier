@@ -16,6 +16,8 @@ public class RetailerFactory {
           return new Newegg();
         case "www.nvidia.com":
           return new Nvidia();
+        case "www.bhphotovideo.com":
+          return new BHPhotoVideo();
         default:
           throw new RuntimeException("Unknown site " + url.getHost());
       }
