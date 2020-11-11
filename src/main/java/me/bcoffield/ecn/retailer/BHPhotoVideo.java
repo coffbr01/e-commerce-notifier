@@ -27,7 +27,7 @@ public class BHPhotoVideo extends AbstractRetailer {
   protected boolean isItemInStock(WebElement itemElement) {
     String text =
         itemElement
-            .findElement(By.xpath("//div[contains(@data-selenium, 'stockStatus')]"))
+            .findElement(By.xpath("//span[contains(@data-selenium, 'stockStatus')]"))
             .getText();
     return !text.equalsIgnoreCase("More on the Way");
   }
