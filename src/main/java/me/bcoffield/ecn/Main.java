@@ -73,10 +73,15 @@ public class Main {
 
       SaveFileMgmt.save();
       try {
-        Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe");
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+          Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe");
+        } else if (System.getProperty("os.name").toLowerCase().startsWith("linux")) {
+          Runtime.getRuntime().exec("killall geckodriver");
+        }
       } catch (IOException e) {
-        log.error("Could not kill geckodriver.exe's", e);
+        log.error("Could not kill geckodriver", e);
       }
+
       delay();
     }
   }
