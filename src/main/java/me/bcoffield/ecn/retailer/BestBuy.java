@@ -34,6 +34,6 @@ public class BestBuy extends AbstractRetailer {
 
   @Override
   protected boolean canPurchaseProduct(WebDriver driver) {
-    return false;
+    return driver.findElement(By.className("add-to-cart-button")).getText().equalsIgnoreCase("add to cart");
   }
 }

@@ -34,6 +34,6 @@ public class BHPhotoVideo extends AbstractRetailer {
 
   @Override
   protected boolean canPurchaseProduct(WebDriver driver) {
-    return false;
+    return driver.findElement(By.xpath("//button[contains(@data-selenium, 'addToCartButton')]")).isDisplayed();
   }
 }

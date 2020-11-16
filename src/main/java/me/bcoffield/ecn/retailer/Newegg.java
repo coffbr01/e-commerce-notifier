@@ -32,6 +32,6 @@ public class Newegg extends AbstractRetailer {
 
   @Override
   protected boolean canPurchaseProduct(WebDriver driver) {
-    return false;
+    return driver.findElement(By.className("product-inventory")).getText().toLowerCase().contains("in stock");
   }
 }
