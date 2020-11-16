@@ -79,6 +79,7 @@ public abstract class AbstractRetailer implements IRetailer {
     WebDriver driver = null;
     try {
       driver = openWebDriver(url);
+      Thread.sleep(5000);
       boolean inStock = canPurchaseProduct(driver);
       log.info("in stock: {} for {}", inStock, url);
       return inStock;

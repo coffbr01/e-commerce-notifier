@@ -37,6 +37,6 @@ public class MicroCenter extends AbstractRetailer {
 
   @Override
   protected boolean canPurchaseProduct(WebDriver driver) {
-    return false;
+      return driver.findElement(By.className("inventoryCnt")).getText().toLowerCase().contains("in stock");
   }
 }
