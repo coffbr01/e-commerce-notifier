@@ -62,7 +62,11 @@ public class Main {
               .map(url -> createRetailerListRunnable(url.getUrl()))
               .collect(Collectors.toList()));
 
-      ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
+      int threads = StartupConfig.get().getThreadCount();
+      if (threads == -1) {
+        threads = tasks.size();
+      }
+      ExecutorService executor = Executors.newFixedThreadPool(threads);
 
       CompletableFuture<?>[] futures =
           tasks.stream()

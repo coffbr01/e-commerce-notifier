@@ -20,6 +20,7 @@ public class StartupConfig {
   private NotifierConfig notifier = new NotifierConfig();
   private List<RetailerUrl> productListUrls = Collections.emptyList();
   private List<RetailerUrl> productUrls = Collections.emptyList();
+  private int threadCount = 2;
 
   public static void set(StartupConfig startupConfig) {
     config = startupConfig;
