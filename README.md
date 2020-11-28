@@ -29,6 +29,9 @@ maxDelay: 900000
 # (Optional) Notifier type, e.g. TWILIO, PRINTLN. Default TWILIO
 notifierType: TWILIO
 
+# (Optional) Number of Firefox threads to spawn at once. Defaults to 2. Give -1 to have the same number of threads as URLs
+threadCount: 2
+
 # The product list pages to scrape. In this example, we're looking across 4 retailers for any RTX 3080 availability
 productListUrls:
   - url: https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0507002&id=pcat17071&iht=n&ks=960&list=y&qp=gpusv_facet%3DGraphics%20Processing%20Unit%20(GPU)~NVIDIA%20GeForce%20RTX%203080&sc=Global&st=categoryid%24abcat0507002&type=page&usc=All%20Categories
