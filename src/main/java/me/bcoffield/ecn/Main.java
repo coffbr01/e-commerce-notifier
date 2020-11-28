@@ -81,6 +81,7 @@ public class Main {
           Runtime.getRuntime().exec("taskkill /F /IM geckodriver.exe");
         } else if (System.getProperty("os.name").toLowerCase().startsWith("linux")) {
           Runtime.getRuntime().exec("killall geckodriver");
+          Runtime.getRuntime().exec("killall firefox");
         }
       } catch (IOException e) {
         log.error("Could not kill geckodriver", e);
