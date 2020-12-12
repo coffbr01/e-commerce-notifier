@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "143008247289",
+    "project_id": "e-commerce-notifier",
+    "storage_bucket": "e-commerce-notifier.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143008247289:android:825d43142661be3beb2128",
+        "android_client_info": {
+          "package_name": "me.bcoffield.ecommercenotifier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143008247289-2va2j5qk52rpd5kb3t9rok0037c2ao7i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAW2rY50Tktn2A__DO5HUGxLBJiZDUVXA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143008247289-2va2j5qk52rpd5kb3t9rok0037c2ao7i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
