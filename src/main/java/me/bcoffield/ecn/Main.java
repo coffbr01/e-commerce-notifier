@@ -2,13 +2,14 @@ package me.bcoffield.ecn;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import lombok.extern.slf4j.Slf4j;
+import me.bcoffield.ecn.config.NotifierConfig;
 import me.bcoffield.ecn.config.RetailerUrl;
 import me.bcoffield.ecn.config.StartupConfig;
-import me.bcoffield.ecn.notifier.INotifier;
-import me.bcoffield.ecn.notifier.NotifierType;
-import me.bcoffield.ecn.notifier.PrintlnNotifier;
-import me.bcoffield.ecn.notifier.TwilioNotifier;
+import me.bcoffield.ecn.notifier.*;
 import me.bcoffield.ecn.persistence.ErrorStatistic;
 import me.bcoffield.ecn.persistence.SaveFileMgmt;
 import me.bcoffield.ecn.retailer.RetailerFactory;
@@ -27,7 +28,8 @@ import java.util.stream.Collectors;
 public class Main {
 
   private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-  private INotifier notifier;
+  public static FirebaseApp firebaseApp;
+  private List<INotifier> notifiers;
 
   public static void main(String[] args) throws IOException, ParseException {
     initConfig(args);
@@ -49,10 +51,12 @@ public class Main {
       log.info("Created log file");
     }
     System.setProperty("webdriver.gecko.driver", StartupConfig.get().getGeckoDriver());
+    FirebaseOptions firebaseOptions = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build();
+    firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
   }
 
   private void start() {
-    notifier = getNotifier();
+    notifiers = getNotifiers(StartupConfig.get().getNotifiers());
 
     while (true) {
       List<RetailerUrl> productListUrls =
@@ -98,6 +102,24 @@ public class Main {
     }
   }
 
+  /**
+   * Factory method of sorts. FML. IDC. This is a script.
+   *
+   * @param notifiers The list of notifier configs in config.yaml
+   * @return A list of concrete notifier instances based off the config notifiers
+   */
+  private List<INotifier> getNotifiers(List<NotifierConfig> notifiers) {
+    return notifiers.stream().map(notifierConfig -> {
+      if (NotifierType.TWILIO.equals(notifierConfig.getType())) {
+        return new TwilioNotifier();
+      } else if (NotifierType.ANDROID.equals(notifierConfig.getType())) {
+        return new AndroidNotifier();
+      } else {
+        return new PrintlnNotifier();
+      }
+    }).collect(Collectors.toList());
+  }
+
   private List<RetailerUrl> filterHighErrorRate(List<RetailerUrl> urls) {
     final Map<String, ErrorStatistic> errorStatistics = SaveFileMgmt.get().getErrorStatistics();
     return urls.stream()
@@ -125,7 +147,7 @@ public class Main {
   private Runnable createRetailerProductRunnable(String url) {
     return () -> {
       if (RetailerFactory.getRetailer(url).isProductInStock(url)) {
-        notifier.notify(url);
+        notifiers.forEach(notifier -> notifier.notify(url));
       }
     };
   }
@@ -134,7 +156,7 @@ public class Main {
     return () ->
         RetailerFactory.getRetailer(url)
             .findInStockUrls(url)
-            .forEach(inStockUrl -> notifier.notify(inStockUrl));
+            .forEach(inStockUrl -> notifiers.forEach(notifier -> notifier.notify(inStockUrl)));
   }
 
   private void delay() {
@@ -155,12 +177,5 @@ public class Main {
     long hour = (durationInMillis / (1000 * 60 * 60)) % 60;
 
     return String.format("%02d:%02d:%02d", hour, minute, second);
-  }
-
-  private INotifier getNotifier() {
-    if (StartupConfig.get().getNotifier().getType() == NotifierType.PRINTLN) {
-      return new PrintlnNotifier();
-    }
-    return new TwilioNotifier();
   }
 }
