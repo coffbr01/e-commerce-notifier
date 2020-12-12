@@ -27,7 +27,10 @@ minDelay: 60000
 maxDelay: 900000
 
 # (Optional) Notifier type, e.g. TWILIO, PRINTLN. Default TWILIO
-notifierType: TWILIO
+notifierType:
+  type: TWILIO
+  # The time between notifying for a particular item
+  minimumInterval: 86400000
 
 # (Optional) Number of Firefox threads to spawn at once. Defaults to 2. Give -1 to have the same number of threads as URLs
 threadCount: 2
@@ -38,7 +41,7 @@ productListUrls:
   - url: https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=3080&searchButton=search&storeId=045
   - url: https://www.newegg.com/p/pl?N=100007709%20601357247
   - url: https://www.nvidia.com/en-us/shop/geforce/gpu/?page=1&limit=9&locale=en-us&category=GPU&gpu=RTX%203080&manufacturer=NVIDIA&manufacturer_filter=NVIDIA~1,ASUS~1,EVGA~2,GIGABYTE~2,MSI~1,PNY~0,ZOTAC~0
-  - url: https://www.bhphotovideo.com/c/search?q=rtx%203000&filters=fct_category%3Agraphic_cards_6567
+  - url: https://www.bhphotovideo.com/c/search?q=rtx%203080&filters=fct_category%3Agraphic_cards_6567
 
 # The single product pages to scrape. Useful if a retailer's list page is terrible. That's NVidia...they're terrible.
 productUrls:
