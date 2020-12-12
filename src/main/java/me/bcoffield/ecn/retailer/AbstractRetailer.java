@@ -116,6 +116,7 @@ public abstract class AbstractRetailer implements IRetailer {
     FirefoxOptions firefoxOptions = new FirefoxOptions();
     firefoxOptions.setHeadless(true);
     firefoxOptions.setLogLevel(FirefoxDriverLogLevel.ERROR);
+    firefoxOptions.addPreference("permissions.default.image", 2);
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     driver.manage().window().setPosition(new Point(0, 0));
     driver.manage().window().setSize(new Dimension(3840, 2160));
