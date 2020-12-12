@@ -29,7 +29,7 @@ public class BHPhotoVideo extends AbstractRetailer {
         itemElement
             .findElement(By.xpath("//span[contains(@data-selenium, 'stockStatus')]"))
             .getText();
-    return !text.equalsIgnoreCase("More on the Way");
+    return text.equalsIgnoreCase("In Stock");
   }
 
   @Override

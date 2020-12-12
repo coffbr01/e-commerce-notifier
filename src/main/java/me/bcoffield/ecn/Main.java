@@ -41,6 +41,13 @@ public class Main {
     CommandLine cmd = parser.parse(options, args);
     StartupConfig.set(
         mapper.readValue(new File(cmd.getOptionValue("config")), StartupConfig.class));
+    File logDir = new File("logs");
+    if (logDir.mkdir()) {
+      System.out.println("Created log dir");
+    }
+    if (new File(logDir, "e-commerce-notifier.log").createNewFile()) {
+      log.info("Created log file");
+    }
     System.setProperty("webdriver.gecko.driver", StartupConfig.get().getGeckoDriver());
   }
 
