@@ -20,10 +20,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class AbstractRetailer implements IRetailer {
-  /** Selenium By that tells this class how to find the product list */
+  /**
+   * Selenium By that tells this class how to find the product list
+   */
   protected abstract By getListSelector();
 
-  /** Selenium By that tells this class how to find items in the product list */
+  /**
+   * Selenium By that tells this class how to find items in the product list
+   */
   protected abstract By getListItemSelector();
 
   /**
@@ -120,7 +124,17 @@ public abstract class AbstractRetailer implements IRetailer {
     WebDriver driver = new FirefoxDriver(firefoxOptions);
     driver.manage().window().setPosition(new Point(0, 0));
     driver.manage().window().setSize(new Dimension(3840, 2160));
-    driver.get(url);
+    Thread t = new Thread(() -> driver.get(Thread.currentThread().getName()), url);
+    t.start();
+    try {
+      t.join(10000);
+    } catch (InterruptedException e) { // ignore
+      log.debug("Thread interrupted ".concat(url), e);
+    }
+    if (t.isAlive()) { // Thread still alive, we need to abort
+      log.warn("Timeout on loading page " + url);
+      t.interrupt();
+    }
     return driver;
   }
 

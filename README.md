@@ -26,11 +26,15 @@ toPhoneNumbers:
 minDelay: 60000
 maxDelay: 900000
 
-# (Optional) Notifier type, e.g. TWILIO, PRINTLN. Default TWILIO
-notifierType:
-  type: TWILIO
-  # The time between notifying for a particular item
-  minimumInterval: 86400000
+# (Optional) Notifier types, e.g. TWILIO, PRINTLN. Default TWILIO only
+notifiers:
+  - type: TWILIO
+    # The time between notifying for a particular item
+    minumumInterval: 86400000
+  - type: PRINTLN
+    minimumInterval: 0
+  - type: ANDROID
+    minimumInterval: 43200000
 
 # (Optional) Number of Firefox threads to spawn at once. Defaults to 2. Give -1 to have the same number of threads as URLs
 threadCount: 2
@@ -51,6 +55,8 @@ productUrls:
 4. Run `mvn clean install` to build the project (install [maven](https://maven.apache.org/install.html)
  if you don't already have it)
 5. Run `java -jar target/e-commerce-notifier-1.0-SNAPSHOT-jar-with-dependencies.jar -config <yaml_from_step_3>`
+5a. If you're using the ANDROID notifier, set GOOGLE_APPLICATION_CREDENTIALS="/path/to/privateKey.json" as an environment variable,
+   and set up a Firebase default GCS bucket
 
 Currently implemented retailers are:
   * Best Buy
