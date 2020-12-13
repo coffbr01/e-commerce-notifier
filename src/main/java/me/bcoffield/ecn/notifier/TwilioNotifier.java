@@ -6,6 +6,8 @@ import com.twilio.type.PhoneNumber;
 import lombok.extern.slf4j.Slf4j;
 import me.bcoffield.ecn.config.StartupConfig;
 
+import java.util.List;
+
 @Slf4j
 public class TwilioNotifier extends AbstractNotifier {
 
@@ -22,9 +24,10 @@ public class TwilioNotifier extends AbstractNotifier {
   @Override
   void sendNotification(String note) {
     PhoneNumber from = new PhoneNumber(StartupConfig.get().getFromPhoneNumber());
-    StartupConfig.get()
-        .getToPhoneNumbers()
-        .forEach(to -> Message.creator(new PhoneNumber(to), from, note).create());
+    List<String> toPhoneNumbers = StartupConfig.get().getToPhoneNumbers();
+    if (toPhoneNumbers != null) {
+      toPhoneNumbers.forEach(to -> Message.creator(new PhoneNumber(to), from, note).create());
+    }
   }
 
   @Override
