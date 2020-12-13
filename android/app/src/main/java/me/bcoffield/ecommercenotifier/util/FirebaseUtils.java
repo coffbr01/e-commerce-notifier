@@ -1,5 +1,6 @@
 package me.bcoffield.ecommercenotifier.util;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
@@ -16,7 +17,12 @@ public class FirebaseUtils {
         return INSTANCE;
     }
 
-    public void uploadToken(String token) {
+    public void uploadToken(Context context) {
+        String token = context.getSharedPreferences("default", Context.MODE_PRIVATE).getString("firebaseToken", null);
+        if (token == null) {
+            Log.e(getClass().getSimpleName(), "No firebase token found");
+            return;
+        }
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference tokenRef = storage.getReference("firebaseTokens/" + token);
         UploadTask uploadTask = tokenRef.putBytes(token.getBytes());

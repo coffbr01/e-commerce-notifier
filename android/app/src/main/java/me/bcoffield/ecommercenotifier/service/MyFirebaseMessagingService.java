@@ -6,10 +6,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -23,7 +25,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
-        FirebaseUtils.getInstance().uploadToken(token);
+        Log.i(getClass().getSimpleName(), "New token: ".concat(token));
+        getSharedPreferences("default", MODE_PRIVATE).edit().putString("firebaseToken", token).apply();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            FirebaseUtils.getInstance().uploadToken(this);
+        }
     }
 
     @Override

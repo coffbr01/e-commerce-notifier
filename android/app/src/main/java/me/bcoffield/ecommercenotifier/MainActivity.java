@@ -92,13 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MainActivity.this.getClass().getSimpleName(), "signInWithCredential:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         toggleSignIn(user == null);
-                        user.getIdToken(false).addOnSuccessListener(getTokenResult -> {
-                            if (getTokenResult.getToken() == null) {
-                                toggleSignIn(true);
-                            } else {
-                                FirebaseUtils.getInstance().uploadToken(getTokenResult.getToken());
-                            }
-                        });
+                        FirebaseUtils.getInstance().uploadToken(MainActivity.this);
                     } else {
                         // If sign in fails, display sign in button again.
                         Log.w(MainActivity.this.getClass().getSimpleName(), "signInWithCredential:failure", task.getException());
