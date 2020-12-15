@@ -31,6 +31,9 @@ public abstract class AbstractNotifier implements INotifier {
   }
 
   private boolean isAllowedToNotify(String note, SaveFile saveFile) {
+    if (StartupConfig.get().getNotificationBlacklist().contains(note)) {
+      return false;
+    }
     if (!saveFile.getNotificationSummaries().containsKey(note)) {
       saveFile.getNotificationSummaries().put(note, new NotificationSummary(note));
       return true;

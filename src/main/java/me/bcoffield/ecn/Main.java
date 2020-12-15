@@ -146,17 +146,26 @@ public class Main {
 
   private Runnable createRetailerProductRunnable(String url) {
     return () -> {
-      if (RetailerFactory.getRetailer(url).isProductInStock(url)) {
-        notifiers.forEach(notifier -> notifier.notify(url));
+      try {
+        if (RetailerFactory.getRetailer(url).isProductInStock(url)) {
+          notifiers.forEach(notifier -> notifier.notify(url));
+        }
+      } catch (Exception e) {
+        log.error("Unhandled exception", e);
       }
     };
   }
 
   private Runnable createRetailerListRunnable(String url) {
-    return () ->
+    return () -> {
+      try {
         RetailerFactory.getRetailer(url)
             .findInStockUrls(url)
             .forEach(inStockUrl -> notifiers.forEach(notifier -> notifier.notify(inStockUrl)));
+      } catch (Exception e) {
+        log.error("Unhandled exception", e);
+      }
+    };
   }
 
   private void delay() {

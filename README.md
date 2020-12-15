@@ -36,6 +36,10 @@ notifiers:
   - type: ANDROID
     minimumInterval: 43200000
 
+# (Optional) Never notify about these product URLs
+notificationBlacklist:
+  - https://www.microcenter.com/product/631166/dell-alienware-aurora-r11-gaming-computer
+
 # (Optional) Number of Firefox threads to spawn at once. Defaults to 2. Give -1 to have the same number of threads as URLs
 threadCount: 2
 

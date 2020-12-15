@@ -22,6 +22,7 @@ public class StartupConfig {
   private List<RetailerUrl> productListUrls = Collections.emptyList();
   private List<RetailerUrl> productUrls = Collections.emptyList();
   private int threadCount = 2;
+  private List<String> notificationBlacklist = Collections.emptyList();
 
   public static void set(StartupConfig startupConfig) {
     config = startupConfig;
