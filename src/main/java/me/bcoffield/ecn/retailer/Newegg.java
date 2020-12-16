@@ -15,7 +15,7 @@ public class Newegg extends AbstractRetailer {
 
   @Override
   protected By getListItemSelector() {
-    return By.className("item-cell");
+    return By.className("item-container");
   }
 
   @Override

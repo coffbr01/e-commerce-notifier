@@ -1,6 +1,7 @@
 package me.bcoffield.ecn.retailer;
 
 import lombok.extern.slf4j.Slf4j;
+import me.bcoffield.ecn.config.StartupConfig;
 import me.bcoffield.ecn.persistence.ErrorStatistic;
 import me.bcoffield.ecn.persistence.SaveFileMgmt;
 import org.apache.commons.io.FileUtils;
@@ -57,7 +58,14 @@ public abstract class AbstractRetailer implements IRetailer {
       List<WebElement> listItems = driver.findElements(getListItemSelector());
       List<String> inStockUrls =
           listItems.stream()
-              .filter(this::isItemInStock)
+              .filter(webElement -> {
+                try {
+                  return isItemInStock(webElement);
+                } catch (NoSuchElementException e) {
+                  log.debug("Could not find element", e);
+                  return false;
+                }
+              })
               .map(this::getItemUrl)
               .collect(Collectors.toList());
       if (!inStockUrls.isEmpty()) {
@@ -127,7 +135,7 @@ public abstract class AbstractRetailer implements IRetailer {
     Thread t = new Thread(() -> driver.get(Thread.currentThread().getName()), url);
     t.start();
     try {
-      t.join(10000);
+      t.join(StartupConfig.get().getPageTimeoutMs());
     } catch (InterruptedException e) { // ignore
       log.debug("Thread interrupted ".concat(url), e);
     }

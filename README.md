@@ -26,6 +26,9 @@ toPhoneNumbers:
 minDelay: 60000
 maxDelay: 900000
 
+# (Optional) Time to wait until selenium timeout on page load. Default 15000
+pageTimeoutMs: 15000
+
 # (Optional) Notifier types, e.g. TWILIO, PRINTLN. Default TWILIO only
 notifiers:
   - type: TWILIO

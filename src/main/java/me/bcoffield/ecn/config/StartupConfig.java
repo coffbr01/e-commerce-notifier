@@ -23,6 +23,7 @@ public class StartupConfig {
   private List<RetailerUrl> productUrls = Collections.emptyList();
   private int threadCount = 2;
   private List<String> notificationBlacklist = Collections.emptyList();
+  private long pageTimeoutMs = 15000;
 
   public static void set(StartupConfig startupConfig) {
     config = startupConfig;
