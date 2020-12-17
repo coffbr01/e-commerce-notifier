@@ -1,37 +1,34 @@
 package me.bcoffield.ecn.retailer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
-public class Newegg extends AbstractRetailer {
+public class Newegg extends AbstractHttpClientRetailer {
 
   @Override
-  protected By getListSelector() {
-    return By.className("items-grid-view");
+  protected List<String> getProductUrlsFromListPage(Document document) {
+    Element grid = document.body().selectFirst(".items-grid-view");
+    Elements gridItems = grid.select(".item-container");
+    return gridItems.stream()
+        .map(element -> element.selectFirst(".item-img").attr("href"))
+        .collect(Collectors.toList());
   }
 
   @Override
-  protected By getListItemSelector() {
-    return By.className("item-container");
-  }
-
-  @Override
-  protected String getItemUrl(WebElement itemElement) {
-    return itemElement.findElement(By.className("item-img")).getAttribute("href");
-  }
-
-  @Override
-  protected boolean isItemInStock(WebElement itemElement) {
-    String text = itemElement.findElement(By.className("btn")).getText();
-
-    return text.equalsIgnoreCase("ADD TO CART");
-  }
-
-  @Override
-  protected boolean canPurchaseProduct(WebDriver driver) {
-    return driver.findElement(By.className("product-inventory")).getText().toLowerCase().contains("in stock");
+  protected boolean hasBuyButtonOnProductPage(Document document) {
+    Element productBuy = document.selectFirst(".product-buy");
+    String buttonText;
+    if (productBuy != null) {
+      buttonText = productBuy.select(".btn").text();
+    } else {
+      buttonText = document.select(".atnPrimary").text();
+    }
+    return "add to cart".equalsIgnoreCase(buttonText);
   }
 }

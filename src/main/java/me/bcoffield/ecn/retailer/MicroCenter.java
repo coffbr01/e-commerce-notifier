@@ -1,42 +1,25 @@
 package me.bcoffield.ecn.retailer;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.jsoup.nodes.Document;
 
-public class MicroCenter extends AbstractRetailer {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class MicroCenter extends AbstractHttpClientRetailer {
+
+  private static final String BASE_URL = "https://www.microcenter.com";
+  private static final String QUERY_STRING = "?storeId=045";
 
   @Override
-  protected By getListSelector() {
-    return By.id("productGrid");
+  protected List<String> getProductUrlsFromListPage(Document document) {
+    return document.selectFirst("#productGrid").select(".detail_wrapper").stream()
+        .map(element -> BASE_URL + element.selectFirst(".pDescription").getElementsByTag("a").get(0).attr("href") + QUERY_STRING)
+        .collect(Collectors.toList());
   }
 
   @Override
-  protected By getListItemSelector() {
-    return By.className("detail_wrapper");
-  }
 
-  @Override
-  protected String getItemUrl(WebElement itemElement) {
-    return itemElement
-        .findElement(By.className("pDescription"))
-        .findElement(By.tagName("a"))
-        .getAttribute("href");
-  }
-
-  @Override
-  protected boolean isItemInStock(WebElement itemElement) {
-    String text =
-        itemElement
-            .findElement(By.className("stock"))
-            .findElement(By.tagName("strong"))
-            .findElement(By.tagName("span"))
-            .getText();
-    return text.equalsIgnoreCase("IN STOCK");
-  }
-
-  @Override
-  protected boolean canPurchaseProduct(WebDriver driver) {
-      return driver.findElement(By.className("inventoryCnt")).getText().toLowerCase().contains("in stock");
+  protected boolean hasBuyButtonOnProductPage(Document document) {
+    return document.body().selectFirst(".inventory").selectFirst(".inventoryCnt").text().matches("\\d.* in stock");
   }
 }
