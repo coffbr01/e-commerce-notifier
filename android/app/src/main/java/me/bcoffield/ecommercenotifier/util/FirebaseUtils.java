@@ -23,8 +23,12 @@ public class FirebaseUtils {
             Log.e(getClass().getSimpleName(), "No firebase token found");
             return;
         }
+        String email = context.getSharedPreferences("default", Context.MODE_PRIVATE).getString("email", null);
+        if (email == null) {
+            Log.e(getClass().getSimpleName(), "No email found");
+        }
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference tokenRef = storage.getReference("firebaseTokens/" + token);
+        StorageReference tokenRef = storage.getReference("firebaseTokens/" + email);
         UploadTask uploadTask = tokenRef.putBytes(token.getBytes());
         uploadTask.addOnSuccessListener(task -> Log.i(getClass().getSimpleName(), "Token upload successful"));
         uploadTask.addOnFailureListener(task -> Log.e(getClass().getSimpleName(), "Token upload failed"));
