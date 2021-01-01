@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class BHPhotoVideo extends AbstractRetailer {
+public class BHPhotoVideo extends AbstractSeleniumRetailer {
 
   @Override
   protected By getListSelector() {

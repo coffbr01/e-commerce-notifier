@@ -8,7 +8,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 @Slf4j
-public class Nvidia extends AbstractRetailer {
+public class Nvidia extends AbstractSeleniumRetailer {
   @Override
   protected By getListSelector() {
     return By.id("mainCont");

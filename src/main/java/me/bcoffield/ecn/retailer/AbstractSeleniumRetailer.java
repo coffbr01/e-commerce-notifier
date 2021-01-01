@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class AbstractRetailer implements IRetailer {
+public abstract class AbstractSeleniumRetailer implements IRetailer {
   /**
    * Selenium By that tells this class how to find the product list
    */

@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class BestBuy extends AbstractRetailer {
+public class BestBuy extends AbstractSeleniumRetailer {
 
   @Override
   protected By getListSelector() {
