@@ -45,13 +45,15 @@ public abstract class AbstractHttpClientRetailer implements IRetailer {
               .map(CompletableFuture::join)
               .filter(productUrl -> !isNull(productUrl))
               .collect(Collectors.toList());
-          log.info("{} out of {} in stock for {}", inStockProductUrls.size(), productUrls.size(), url);
+          log.info("{} of {} in stock for {}", inStockProductUrls.size(), productUrls.size(), url);
           executor.shutdown();
           return inStockProductUrls;
+        } else {
+          log.error("{} code for {}. Message={}", response.getStatusLine().getStatusCode(), url, response.getStatusLine().getReasonPhrase());
+          log.debug("body: {}", EntityUtils.toString(response.getEntity()));
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
       log.error("problem getting list page for ".concat(url), e);
     }
 

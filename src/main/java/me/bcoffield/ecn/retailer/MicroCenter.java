@@ -1,8 +1,10 @@
 package me.bcoffield.ecn.retailer;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MicroCenter extends AbstractHttpClientRetailer {
@@ -20,6 +22,8 @@ public class MicroCenter extends AbstractHttpClientRetailer {
   @Override
 
   protected boolean hasBuyButtonOnProductPage(Document document) {
-    return document.body().selectFirst(".inventory").selectFirst(".inventoryCnt").text().matches("\\d.* in stock");
+    Element inventory = document.body().selectFirst(".inventory");
+    Element inventoryCnt = inventory.selectFirst(".inventoryCnt");
+    return Objects.requireNonNullElse(inventoryCnt, inventory).text().matches("\\d.* in stock");
   }
 }
